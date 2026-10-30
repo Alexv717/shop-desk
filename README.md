@@ -2,7 +2,7 @@
 
 A free, phone-friendly web app for performance auto shops. One file (`index.html`): no build step, no server, no accounts.
 
-**Live link:** _coming once GitHub Pages is on_
+**Live link:** https://alexv717.github.io/shop-desk/
 
 ## Tabs
 
