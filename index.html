@@ -1,0 +1,510 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Shop Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a shop-floor tool. Sticky header with tabs, one working column, big tap targets for greasy thumbs. */
+:root {
+  --bg: #EEF0EE;
+  --panel: #FFFFFF;
+  --ink: #15181B;
+  --muted: #5B636B;
+  --line: #D3D8DC;
+  --accent: #C2410C;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #FBE7DC;
+  --ok: #1C7A44; --ok-bg: #DFF2E7;
+  --bad: #B42318; --bad-bg: #FBE3E1;
+  --f-display: "Saira Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #111417; --panel: #1A1F24; --ink: #E7EAED; --muted: #9AA4AE; --line: #2D343B;
+  --accent: #F97A3D; --accent-ink: #1A0E07; --accent-soft: #3A2116;
+  --ok: #6BD39A; --ok-bg: #133022; --bad: #F2867C; --bad-bg: #3A1A18;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #111417; --panel: #1A1F24; --ink: #E7EAED; --muted: #9AA4AE; --line: #2D343B;
+  --accent: #F97A3D; --accent-ink: #1A0E07; --accent-soft: #3A2116;
+  --ok: #6BD39A; --ok-bg: #133022; --bad: #F2867C; --bad-bg: #3A1A18;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line); }
+.head-inner { max-width: 880px; margin: 0 auto; padding-block: 12px 0; display: flex; flex-direction: column; gap: 10px; }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand h1 { margin: 0; font-family: var(--f-display); font-weight: 800; font-size: 1.7rem; letter-spacing: 0.02em; text-transform: uppercase; line-height: 1; }
+.brand span { font-family: var(--f-mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+nav { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+nav a { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); text-decoration: none; padding: 8px 12px 10px; border-bottom: 3px solid transparent; white-space: nowrap; }
+nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); }
+nav a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+main { max-width: 880px; margin: 0 auto; padding-block: 20px 64px; }
+section.view { display: flex; flex-direction: column; gap: 18px; }
+h2 { font-family: var(--f-display); font-weight: 700; font-size: 1.6rem; text-transform: uppercase; letter-spacing: 0.02em; margin: 0; line-height: 1.1; text-wrap: balance; }
+h3 { font-family: var(--f-display); font-weight: 700; font-size: 1.2rem; letter-spacing: 0.02em; margin: 0; }
+p { margin: 0; max-width: 66ch; }
+.sub { color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+label.f { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; font-weight: 500; color: var(--muted); min-width: 0; }
+input, select, textarea { font: inherit; font-size: 1rem; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; width: 100%; min-height: 44px; }
+textarea { resize: vertical; min-height: 120px; font-family: var(--f-mono); font-size: 0.9rem; line-height: 1.5; }
+input[type="number"] { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { font-family: var(--f-display); font-weight: 700; font-size: 1.05rem; letter-spacing: 0.04em; text-transform: uppercase; border-radius: 4px; padding: 10px 16px; min-height: 44px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.small { font-size: 0.9rem; padding: 6px 10px; min-height: 36px; }
+.note { font-size: 0.85rem; color: var(--muted); }
+.example { display: inline-block; font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 3px; }
+.stat { display: flex; gap: 24px; flex-wrap: wrap; }
+.stat div { display: flex; flex-direction: column; }
+.stat b { font-family: var(--f-display); font-size: 2rem; line-height: 1; }
+.stat span { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.log li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 0.92rem; }
+.log li:last-child { border-bottom: 0; }
+.log time { font-family: var(--f-mono); font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+#qr { background: #FFFFFF; padding: 12px; border-radius: 4px; width: max-content; max-width: 100%; }
+.lines { display: flex; flex-direction: column; gap: 8px; }
+.line { display: grid; grid-template-columns: 1fr 110px 90px 40px; gap: 8px; align-items: end; }
+.line .x { min-height: 44px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 4px; cursor: pointer; font-size: 1.1rem; }
+.totals { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; font-variant-numeric: tabular-nums; max-width: 340px; margin-left: auto; width: 100%; }
+.totals span:nth-child(even) { font-family: var(--f-mono); text-align: right; }
+.totals .grand { font-family: var(--f-display); font-weight: 800; font-size: 1.4rem; border-top: 2px solid var(--ink); padding-top: 6px; }
+.lists { display: flex; flex-wrap: wrap; gap: 8px; }
+.lists button { font-family: var(--f-body); font-size: 0.92rem; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; min-height: 40px; }
+.lists button[aria-pressed="true"] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.progress { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; }
+.progress i { display: block; height: 100%; background: var(--ok); width: 0; transition: width 0.2s; }
+.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.items li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.items li:last-child { border-bottom: 0; }
+.items li .t { min-width: 0; }
+.items li.ok .t { color: var(--muted); }
+.items li.issue .t { color: var(--bad); font-weight: 600; }
+.seg { display: flex; flex-shrink: 0; }
+.seg button { font-family: var(--f-display); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.85rem; min-height: 40px; min-width: 56px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+.seg button:first-child { border-radius: 4px 0 0 4px; }
+.seg button:last-child { border-radius: 0 4px 4px 0; border-left: 0; }
+.seg button.on-ok { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+.seg button.on-bad { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+.calcs { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; }
+.calc .ins { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.calc .outs { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; border-top: 1px dashed var(--line); padding-top: 10px; }
+.calc .outs span:nth-child(odd) { color: var(--muted); font-size: 0.9rem; }
+.calc .outs span:nth-child(even) { font-family: var(--f-mono); font-weight: 500; text-align: right; font-variant-numeric: tabular-nums; }
+.calc .outs .key { color: var(--accent); font-weight: 600; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--panel); padding: 10px 18px; border-radius: 4px; font-weight: 600; z-index: 20; }
+@media (max-width: 560px) {
+  .line { grid-template-columns: 1fr 1fr 44px; }
+  .line .desc { grid-column: 1 / -1; }
+  .calc .ins { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .progress i { transition: none; } }
+</style>
+
+</head>
+<body>
+<header class="gutter">
+  <div class="head-inner">
+    <div class="brand"><h1 id="shopName">Your Shop Name</h1><span>Shop Desk</span></div>
+    <nav aria-label="Sections">
+      <a href="#reviews">Reviews</a>
+      <a href="#quotes">Quotes</a>
+      <a href="#checklists">Checklists</a>
+      <a href="#calc">Tuning calc</a>
+      <a href="#setup">Setup</a>
+    </nav>
+  </div>
+</header>
+
+<main class="gutter">
+
+<!-- REVIEWS -->
+<section class="view" id="v-reviews">
+  <div><h2>Ask for a review</h2><p class="sub">Send this to every customer when they pick up their car. Reviews are the cheapest marketing a new shop has.</p></div>
+  <div class="card">
+    <div class="grid2">
+      <label class="f">Customer first name<input id="r-name" value="Marcus" autocomplete="off"></label>
+      <label class="f">Customer cell<input id="r-phone" type="tel" value="" placeholder="555-555-0123" autocomplete="off"></label>
+      <label class="f">Vehicle (optional)<input id="r-car" value="Mustang GT" autocomplete="off"></label>
+    </div>
+    <label class="f">Message<textarea id="r-msg"></textarea></label>
+    <div class="row">
+      <button class="btn primary" id="r-copy" type="button">Copy message</button>
+      <a class="btn" id="r-sms" href="#">Open in Messages</a>
+      <button class="btn" id="r-log" type="button">Mark as sent</button>
+    </div>
+    <p class="note">"Open in Messages" works when this page is opened on a phone. If it doesn't open, copy the message and paste it into a text.</p>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h3>This month</h3>
+      <div class="stat"><div><b id="r-month">0</b><span>requests sent</span></div><div><b id="r-total">0</b><span>all time</span></div></div>
+      <ul class="log" id="r-list"></ul>
+    </div>
+    <div class="card">
+      <h3>Counter QR code</h3>
+      <p class="sub">Print it and tape it by the register. Customers scan it to leave a Google review.</p>
+      <div id="qr"></div>
+      <p class="note" id="qr-note"></p>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTES -->
+<section class="view" id="v-quotes" hidden>
+  <div><h2>Quick quote</h2><p class="sub">Build a quote at the counter and text it. Uses the labor rate and tax from Setup.</p></div>
+  <div class="card">
+    <div class="grid2">
+      <label class="f">Customer<input id="q-name" value="Marcus" autocomplete="off"></label>
+      <label class="f">Customer cell<input id="q-phone" type="tel" placeholder="555-555-0123" autocomplete="off"></label>
+      <label class="f">Vehicle<input id="q-car" value="2019 Mustang GT 5.0" autocomplete="off"></label>
+    </div>
+    <div><span class="example">Example lines</span></div>
+    <div class="lines" id="q-lines"></div>
+    <div class="row"><button class="btn small" id="q-add" type="button">Add line</button></div>
+    <div class="totals" id="q-totals"></div>
+  </div>
+  <div class="card">
+    <h3>Text to customer</h3>
+    <textarea id="q-msg" readonly></textarea>
+    <div class="row">
+      <button class="btn primary" id="q-copy" type="button">Copy quote</button>
+      <a class="btn" id="q-sms" href="#">Open in Messages</a>
+      <button class="btn" id="q-clear" type="button">Start new quote</button>
+    </div>
+  </div>
+</section>
+
+<!-- CHECKLISTS -->
+<section class="view" id="v-checklists" hidden>
+  <div><h2>Checklists</h2><p class="sub">Same steps every time, for the owner and the students. Mark each item OK or Issue, then copy the summary into the repair order or a text.</p></div>
+  <div class="lists" id="c-picker"></div>
+  <div class="card">
+    <div class="row" style="justify-content: space-between;"><h3 id="c-title"></h3><span class="note" id="c-count"></span></div>
+    <div class="progress" aria-hidden="true"><i id="c-bar"></i></div>
+    <label class="f">Vehicle / RO #<input id="c-car" placeholder="2006 Corvette, RO 1042" autocomplete="off"></label>
+    <ul class="items" id="c-items"></ul>
+    <label class="f">Notes<textarea id="c-notes" placeholder="Anything the next person should know"></textarea></label>
+    <div class="row">
+      <button class="btn primary" id="c-copy" type="button">Copy summary</button>
+      <button class="btn" id="c-reset" type="button">Reset checklist</button>
+    </div>
+  </div>
+</section>
+
+<!-- CALC -->
+<section class="view" id="v-calc" hidden>
+  <div><h2>Tuning calculator</h2><p class="sub">The formulas from class, checked. Numbers update as you type. Examples are filled in; change them to your car.</p></div>
+  <div class="calcs" id="calcs"></div>
+  <p class="note">Planning numbers only. Final fuel and timing decisions come from the wideband, the knock data and an experienced tuner.</p>
+</section>
+
+<!-- SETUP -->
+<section class="view" id="v-setup" hidden>
+  <div><h2>Setup</h2><p class="sub">Fill this in once. It is saved on this device only. To use the same settings on another phone, copy the backup code and paste it there.</p></div>
+  <div class="card">
+    <div class="grid2">
+      <label class="f">Shop name<input id="s-name" autocomplete="off"></label>
+      <label class="f">Shop phone<input id="s-phone" type="tel" autocomplete="off"></label>
+      <label class="f">Google review link<input id="s-review" type="url" placeholder="https://g.page/r/.../review" autocomplete="off"></label>
+      <label class="f">Labor rate ($/hr)<input id="s-rate" type="number" step="1" min="0"></label>
+      <label class="f">Sales tax (%)<input id="s-tax" type="number" step="0.01" min="0"></label>
+      <label class="f">Tax applies to<select id="s-taxon"><option value="parts">Parts only</option><option value="all">Parts and labor</option></select></label>
+      <label class="f">Deposit to book (%)<input id="s-dep" type="number" step="1" min="0" max="100"></label>
+    </div>
+    <p class="note">Find the review link in Google Business Profile: Home, then "Ask for reviews." Check your state's rules on taxing repair labor.</p>
+    <div class="row"><button class="btn primary" id="s-save" type="button">Save settings</button></div>
+  </div>
+  <div class="card">
+    <h3>Backup code</h3>
+    <textarea id="s-backup" placeholder="Paste a backup code here, then Load"></textarea>
+    <div class="row">
+      <button class="btn" id="s-export" type="button">Show my backup code</button>
+      <button class="btn" id="s-copybk" type="button">Copy code</button>
+      <button class="btn" id="s-import" type="button">Load pasted code</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem("shopdesk." + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem("shopdesk." + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var DEFAULTS = { name: "Your Shop Name", phone: "", review: "", rate: 120, tax: 8.25, taxon: "parts", dep: 50 };
+  var S = Object.assign({}, DEFAULTS, store.get("settings", {}));
+
+  function money(n) { return "$" + (isFinite(n) ? n : 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmt(n, d) { return isFinite(n) ? n.toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d }) : "—"; }
+  function digits(p) { return (p || "").replace(/[^\d+]/g, ""); }
+  function smsHref(phone, body) { return "sms:" + digits(phone) + "?&body=" + encodeURIComponent(body); }
+  var toastT;
+  function toast(msg) {
+    var t = document.querySelector(".toast");
+    if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(function () { t.hidden = true; }, 1800);
+  }
+  function copy(text, el) {
+    function fallback() { if (el && el.select) { el.focus(); el.select(); } toast("Selected. Press copy on your keyboard."); }
+    try { navigator.clipboard.writeText(text).then(function () { toast("Copied"); }, fallback); } catch (e) { fallback(); }
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  /* ---------- routing ---------- */
+  var VIEWS = ["reviews", "quotes", "checklists", "calc", "setup"];
+  function route() {
+    var h = (location.hash || "").slice(1);
+    if (VIEWS.indexOf(h) < 0) h = "reviews";
+    VIEWS.forEach(function (v) { $("v-" + v).hidden = v !== h; });
+    document.querySelectorAll("nav a").forEach(function (a) {
+      if (a.getAttribute("href") === "#" + h) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+  }
+  window.addEventListener("hashchange", route);
+
+  function applyName() { $("shopName").textContent = S.name || DEFAULTS.name; }
+
+  /* ---------- reviews ---------- */
+  var reviewLog = store.get("reviews", []);
+  function reviewMsg() {
+    var n = $("r-name").value.trim() || "there";
+    var car = $("r-car").value.trim();
+    var link = S.review || "[add your Google review link in Setup]";
+    return "Hi " + n + ", thanks for trusting " + (S.name || "us") + (car ? " with your " + car : "") +
+      "! If you're happy with the work, a quick Google review helps a small shop more than you know: " + link +
+      "\n\nAny questions about your car, just reply here.";
+  }
+  var rTouched = false;
+  function updateReview() {
+    if (!rTouched) $("r-msg").value = reviewMsg();
+    $("r-sms").href = smsHref($("r-phone").value, $("r-msg").value);
+  }
+  ["r-name", "r-car", "r-phone"].forEach(function (id) { $(id).addEventListener("input", updateReview); });
+  $("r-msg").addEventListener("input", function () { rTouched = true; $("r-sms").href = smsHref($("r-phone").value, $("r-msg").value); });
+  $("r-copy").addEventListener("click", function () { copy($("r-msg").value, $("r-msg")); });
+  $("r-log").addEventListener("click", function () {
+    reviewLog.unshift({ n: $("r-name").value.trim() || "Customer", c: $("r-car").value.trim(), t: Date.now() });
+    reviewLog = reviewLog.slice(0, 500); store.set("reviews", reviewLog); renderLog();
+    $("r-name").value = ""; $("r-phone").value = ""; $("r-car").value = ""; rTouched = false; updateReview();
+    toast("Logged");
+  });
+  function renderLog() {
+    var now = new Date();
+    var month = reviewLog.filter(function (r) { var d = new Date(r.t); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); });
+    $("r-month").textContent = month.length; $("r-total").textContent = reviewLog.length;
+    var list = $("r-list");
+    if (!reviewLog.length) { list.innerHTML = '<li><span class="sub">Tap "Mark as sent" after each text. Your count shows here.</span></li>'; return; }
+    list.innerHTML = reviewLog.slice(0, 6).map(function (r) {
+      return "<li><span>" + esc(r.n) + (r.c ? " · " + esc(r.c) : "") + "</span><time>" + new Date(r.t).toLocaleDateString() + "</time></li>";
+    }).join("");
+  }
+  function renderQR() {
+    var box = $("qr"); box.innerHTML = "";
+    var link = S.review;
+    if (!link) { box.hidden = true; $("qr-note").textContent = "Add your Google review link in Setup to make the QR code."; return; }
+    box.hidden = false; $("qr-note").textContent = link;
+    if (window.QRCode) { try { new QRCode(box, { text: link, width: 180, height: 180 }); } catch (e) { box.hidden = true; } }
+    else { box.hidden = true; $("qr-note").textContent = "QR code couldn't load. The link: " + link; }
+  }
+
+  /* ---------- quotes ---------- */
+  var SAMPLE_LINES = [
+    { d: "Cold air intake, installed", p: 349.99, h: 1 },
+    { d: "Dyno tune (HP Tuners), 4 pulls + datalogs", p: 0, h: 4 },
+    { d: "Spark plugs, iridium (8)", p: 79.92, h: 1 }
+  ];
+  var lines = store.get("quoteLines", SAMPLE_LINES);
+  function renderLines() {
+    $("q-lines").innerHTML = lines.map(function (l, i) {
+      return '<div class="line" data-i="' + i + '">' +
+        '<label class="f desc">Job / part<input data-k="d" id="ql-d' + i + '" value="' + esc(l.d) + '"></label>' +
+        '<label class="f">Parts $<input data-k="p" id="ql-p' + i + '" type="number" step="0.01" min="0" value="' + l.p + '"></label>' +
+        '<label class="f">Labor hrs<input data-k="h" id="ql-h' + i + '" type="number" step="0.1" min="0" value="' + l.h + '"></label>' +
+        '<button class="x" type="button" aria-label="Remove line">×</button></div>';
+    }).join("");
+    updateQuote();
+  }
+  $("q-lines").addEventListener("input", function (e) {
+    var row = e.target.closest(".line"); if (!row) return;
+    var i = +row.dataset.i, k = e.target.dataset.k;
+    lines[i][k] = k === "d" ? e.target.value : parseFloat(e.target.value) || 0;
+    updateQuote();
+  });
+  $("q-lines").addEventListener("click", function (e) {
+    if (!e.target.classList.contains("x")) return;
+    lines.splice(+e.target.closest(".line").dataset.i, 1); renderLines();
+  });
+  $("q-add").addEventListener("click", function () { lines.push({ d: "", p: 0, h: 0 }); renderLines(); });
+  $("q-clear").addEventListener("click", function () {
+    lines = [{ d: "", p: 0, h: 0 }]; $("q-name").value = ""; $("q-phone").value = ""; $("q-car").value = ""; renderLines();
+  });
+  ["q-name", "q-phone", "q-car"].forEach(function (id) { $(id).addEventListener("input", updateQuote); });
+  function updateQuote() {
+    store.set("quoteLines", lines);
+    var rate = +S.rate || 0, taxPct = (+S.tax || 0) / 100;
+    var parts = 0, labor = 0;
+    lines.forEach(function (l) { parts += +l.p || 0; labor += (+l.h || 0) * rate; });
+    var tax = (S.taxon === "all" ? parts + labor : parts) * taxPct;
+    var total = parts + labor + tax;
+    var dep = total * (+S.dep || 0) / 100;
+    $("q-totals").innerHTML =
+      "<span>Parts</span><span>" + money(parts) + "</span>" +
+      "<span>Labor (" + money(rate) + "/hr)</span><span>" + money(labor) + "</span>" +
+      "<span>Tax (" + fmt(+S.tax || 0, 2) + "%)</span><span>" + money(tax) + "</span>" +
+      '<span class="grand">Total</span><span class="grand">' + money(total) + "</span>" +
+      "<span>Deposit to book (" + (+S.dep || 0) + "%)</span><span>" + money(dep) + "</span>";
+    var name = $("q-name").value.trim(), car = $("q-car").value.trim();
+    var body = (S.name || "Shop") + " quote" + (name ? " for " + name : "") + (car ? " (" + car + ")" : "") + ":\n";
+    lines.filter(function (l) { return l.d || l.p || l.h; }).forEach(function (l) {
+      body += "• " + (l.d || "Item") + ": " + money((+l.p || 0) + (+l.h || 0) * rate) + "\n";
+    });
+    body += "\nTotal: " + money(total) + (tax ? " (incl. " + money(tax) + " tax)" : "");
+    if (dep) body += "\nDeposit to book: " + money(dep);
+    body += "\n\nReply YES to approve and we'll get you on the schedule." + (S.phone ? " Questions? Call " + S.phone + "." : "");
+    $("q-msg").value = body;
+    $("q-sms").href = smsHref($("q-phone").value, body);
+  }
+  $("q-copy").addEventListener("click", function () { copy($("q-msg").value, $("q-msg")); });
+
+  /* ---------- checklists ---------- */
+  var LISTS = {
+    checkin: { t: "Vehicle check-in", i: [
+      "Photos of all four sides, wheels and interior", "Existing damage noted and shown to customer", "Mileage and fuel level recorded",
+      "VIN scanned / written down", "Customer's concern written in their words", "Mods and previous tunes noted (ask: has it been tuned before?)",
+      "Keys tagged with name and RO #", "Valuables removed or noted", "Contact number and best time to text confirmed", "Quote approved before work starts"] },
+    predyno: { t: "Pre-dyno inspection", i: [
+      "Oil, coolant and trans fluid full, no leaks", "Tires: condition, pressure and speed rating OK", "Strapped down correctly, wheels chocked",
+      "Fuel level and fuel type confirmed (E85?)", "No exhaust leaks ahead of the wideband", "Plugs and coils match the power level",
+      "Scanned for DTCs and current misfires", "Stock / current tune file read and saved", "Baseline log and baseline pull saved",
+      "Clutch or converter slip checked", "Fan on, IAT and coolant at normal temp before pulls"] },
+    misfire: { t: "Misfire diagnosis", i: [
+      "Misfire isolated to one cylinder (scan tool)", "Plug pulled and compared: color, smell, oil, fuel, buildup", "Plug replaced if fouled or cracked, recheck",
+      "Plug wire / boot swapped to a non-adjacent cylinder: did it follow?", "Coil swapped to a non-adjacent cylinder: did it follow?",
+      "Injector swapped: did it follow?", "Valve cover off: springs, rockers, pushrods, seals inspected", "Compression test done"] },
+    delivery: { t: "Before the car goes home", i: [
+      "Scan tool controls cleared (gear, TCC lock, etc.)", "DTCs checked and cleared", "Final tune file saved with customer name and date",
+      "Before/after logs and dyno sheet saved", "Test drive done", "All tools out of the engine bay", "Fluids topped off, caps tight",
+      "Customer told: fuel type, break-in, what changed", "Review request texted (Reviews tab)"] },
+    student: { t: "Student daily checklist", i: [
+      "Safety glasses and gloves on", "Assigned job and RO read before starting", "Ask before any step you haven't done before",
+      "Photos of the finished work sent to the owner", "Shop tools returned to their foam spots", "Drawer photo taken at closing",
+      "Bay swept, fluids in the right drums", "Shop rags in the bin"] }
+  };
+  var listKey = store.get("listKey", "checkin");
+  if (!LISTS[listKey]) listKey = "checkin";
+  var listState = store.get("listState", {});
+  $("c-picker").innerHTML = Object.keys(LISTS).map(function (k) { return '<button type="button" data-k="' + k + '">' + LISTS[k].t + "</button>"; }).join("");
+  $("c-picker").addEventListener("click", function (e) { var k = e.target.dataset && e.target.dataset.k; if (k) { listKey = k; store.set("listKey", k); renderList(); } });
+  function cur() { if (!listState[listKey]) listState[listKey] = { s: {}, car: "", notes: "" }; return listState[listKey]; }
+  function renderList() {
+    document.querySelectorAll("#c-picker button").forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.k === listKey ? "true" : "false"); });
+    var L = LISTS[listKey], st = cur();
+    $("c-title").textContent = L.t; $("c-car").value = st.car || ""; $("c-notes").value = st.notes || "";
+    $("c-items").innerHTML = L.i.map(function (txt, i) {
+      var v = st.s[i];
+      return '<li class="' + (v || "") + '" data-i="' + i + '"><span class="t">' + esc(txt) + '</span><span class="seg">' +
+        '<button type="button" data-v="ok" class="' + (v === "ok" ? "on-ok" : "") + '" aria-pressed="' + (v === "ok") + '">OK</button>' +
+        '<button type="button" data-v="issue" class="' + (v === "issue" ? "on-bad" : "") + '" aria-pressed="' + (v === "issue") + '">Issue</button></span></li>';
+    }).join("");
+    var done = Object.keys(st.s).filter(function (k) { return st.s[k]; }).length;
+    $("c-count").textContent = done + " of " + L.i.length + " checked";
+    $("c-bar").style.width = (100 * done / L.i.length) + "%";
+  }
+  $("c-items").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    var i = b.closest("li").dataset.i, st = cur();
+    st.s[i] = st.s[i] === b.dataset.v ? null : b.dataset.v;
+    store.set("listState", listState); renderList();
+  });
+  $("c-car").addEventListener("input", function (e) { cur().car = e.target.value; store.set("listState", listState); });
+  $("c-notes").addEventListener("input", function (e) { cur().notes = e.target.value; store.set("listState", listState); });
+  $("c-reset").addEventListener("click", function () { listState[listKey] = { s: {}, car: "", notes: "" }; store.set("listState", listState); renderList(); toast("Checklist reset"); });
+  $("c-copy").addEventListener("click", function () {
+    var L = LISTS[listKey], st = cur();
+    var ok = 0, issues = [], open = [];
+    L.i.forEach(function (t, i) { if (st.s[i] === "ok") ok++; else if (st.s[i] === "issue") issues.push(t); else open.push(t); });
+    var out = L.t + (st.car ? " – " + st.car : "") + " (" + new Date().toLocaleDateString() + ")\n" + ok + " of " + L.i.length + " OK";
+    if (issues.length) out += "\nISSUES:\n- " + issues.join("\n- ");
+    if (open.length) out += "\nNot checked:\n- " + open.join("\n- ");
+    if (st.notes) out += "\nNotes: " + st.notes;
+    copy(out);
+  });
+
+  /* ---------- tuning calculator ---------- */
+  var CALCS = [
+    { t: "Fuel and injector size", ins: [["hp", "Target crank HP", 500], ["bsfc", "BSFC", 0.5, 0.01, "NA .45–.50, boost .55–.65"], ["n", "Injectors", 8], ["dc", "Max duty cycle %", 80]],
+      out: function (v) { var lb = v.hp * v.bsfc; return [["Total fuel", fmt(lb, 1) + " lb/hr"], ["Injector size needed", fmt(lb / (v.n * v.dc / 100), 1) + " lb/hr", 1], ["Gallons per hour", fmt(lb / 6.34, 1) + " gal/hr"]]; } },
+    { t: "Injector flow at new pressure", ins: [["flow", "Rated flow lb/hr", 42], ["rp", "Rated at psi", 43.5, 0.1], ["np", "Actual fuel psi", 58, 0.1]],
+      out: function (v) { return [["Actual flow", fmt(v.flow * Math.sqrt(v.np / v.rp), 1) + " lb/hr", 1]]; } },
+    { t: "Duty cycle and pulse width", ins: [["ipw", "Pulse width ms", 12, 0.1], ["rpm", "RPM", 6000, 100], ["max", "Max duty cycle %", 80]],
+      out: function (v) { return [["Duty cycle", fmt(v.ipw * v.rpm / 1200, 1) + " %", 1], ["Longest pulse at max DC", fmt(v.max * 1200 / v.rpm, 2) + " ms"]]; } },
+    { t: "Horsepower from MAF", ins: [["maf", "MAF reading", 420, 1], ["unit", "Unit", "gs", 0, 0, [["gs", "g/sec"], ["lbm", "lb/min"]]], ["tr", "Transmission", "0.87", 0, 0, [["0.87", "Manual"], ["0.80", "Automatic"]]], ["rpm", "At RPM", 6000, 100]],
+      out: function (v) { var lbm = v.unit === "gs" ? v.maf * 0.132 : v.maf; var fw = lbm * 9.5; return [["Airflow", fmt(lbm, 1) + " lb/min"], ["Flywheel HP", fmt(fw, 0), 1], ["Wheel HP", fmt(fw * parseFloat(v.tr), 0)], ["Flywheel torque", fmt(fw * 5252 / v.rpm, 0) + " lb-ft"]]; } },
+    { t: "Airflow needed", ins: [["hp", "Target crank HP", 400], ["afr", "AFR", 12, 0.1], ["bsfc", "BSFC", 0.55, 0.01]],
+      out: function (v) { var a = v.hp * v.afr * v.bsfc / 60; return [["Airflow", fmt(a, 1) + " lb/min", 1], ["Same in g/sec", fmt(a / 0.132, 0) + " g/s"]]; } },
+    { t: "Turbo pressure ratio", ins: [["boost", "Boost psi", 12, 0.5], ["atm", "Atmosphere psia", 14.7, 0.1, "Sea level 14.7"], ["fl", "Filter loss psi", 0.2, 0.1], ["pl", "Intercooler + pipe loss psi", 1.5, 0.1]],
+      out: function (v) { var p1 = v.atm - v.fl, p2 = v.boost + v.atm + v.pl; return [["P1c inlet", fmt(p1, 1) + " psia"], ["P2c outlet", fmt(p2, 1) + " psia"], ["Pressure ratio", fmt(p2 / p1, 2), 1]]; } },
+    { t: "AFR, lambda and EQ", ins: [["afr", "Target AFR", 12.5, 0.1], ["st", "Stoich", 14.7, 0.01, "Gas 14.7, E10 14.1, E85 9.8"]],
+      out: function (v) { return [["Lambda (target ÷ stoich)", fmt(v.afr / v.st, 3), 1], ["EQ ratio (stoich ÷ target)", fmt(v.st / v.afr, 3)], ["Fuel:air", fmt(1 / v.afr, 4)]]; } },
+    { t: "Displacement and compression", ins: [["b", "Bore in", 4.0, 0.001], ["s", "Stroke in", 3.622, 0.001], ["c", "Cylinders", 8], ["cl", "Clearance volume cc", 75.3, 0.1, "Chamber + gasket + deck ± dome/dish"]],
+      out: function (v) { var ci = v.b * v.b * v.s * 0.7854 * v.c; var sw = ci / v.c * 16.387; return [["Displacement", fmt(ci, 1) + " ci · " + fmt(ci * 0.016387, 2) + " L", 1], ["Swept per cylinder", fmt(sw, 1) + " cc"], ["Compression ratio", fmt((sw + v.cl) / v.cl, 2) + " : 1", 1]]; } }
+  ];
+  var calcVals = store.get("calc", {});
+  $("calcs").innerHTML = CALCS.map(function (c, ci) {
+    return '<div class="card calc" data-c="' + ci + '"><h3>' + c.t + '</h3><div class="ins">' + c.ins.map(function (f) {
+      var id = "c" + ci + "-" + f[0], saved = calcVals[id] !== undefined ? calcVals[id] : f[2];
+      var ctl = f[5] ? '<select id="' + id + '" data-k="' + f[0] + '">' + f[5].map(function (o) { return '<option value="' + o[0] + '"' + (String(saved) === o[0] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>"
+        : '<input id="' + id + '" data-k="' + f[0] + '" type="number" step="' + (f[3] || 1) + '" value="' + saved + '">';
+      return '<label class="f">' + f[1] + ctl + (f[4] ? '<span class="note">' + f[4] + "</span>" : "") + "</label>";
+    }).join("") + '</div><div class="outs"></div></div>';
+  }).join("");
+  function runCalc(card) {
+    var c = CALCS[+card.dataset.c], v = {};
+    card.querySelectorAll("[data-k]").forEach(function (el) { v[el.dataset.k] = el.tagName === "SELECT" ? el.value : parseFloat(el.value); });
+    card.querySelector(".outs").innerHTML = c.out(v).map(function (r) { return '<span class="' + (r[2] ? "key" : "") + '">' + r[0] + '</span><span class="' + (r[2] ? "key" : "") + '">' + r[1] + "</span>"; }).join("");
+  }
+  document.querySelectorAll(".calc").forEach(runCalc);
+  $("calcs").addEventListener("input", function (e) {
+    var card = e.target.closest(".calc"); if (!card) return;
+    calcVals[e.target.id] = e.target.value; store.set("calc", calcVals); runCalc(card);
+  });
+
+  /* ---------- setup ---------- */
+  function fillSetup() {
+    $("s-name").value = S.name; $("s-phone").value = S.phone; $("s-review").value = S.review;
+    $("s-rate").value = S.rate; $("s-tax").value = S.tax; $("s-taxon").value = S.taxon; $("s-dep").value = S.dep;
+  }
+  function applyAll() { applyName(); updateReview(); renderQR(); updateQuote(); }
+  $("s-save").addEventListener("click", function () {
+    S = { name: $("s-name").value.trim() || DEFAULTS.name, phone: $("s-phone").value.trim(), review: $("s-review").value.trim(),
+      rate: parseFloat($("s-rate").value) || 0, tax: parseFloat($("s-tax").value) || 0, taxon: $("s-taxon").value, dep: parseFloat($("s-dep").value) || 0 };
+    store.set("settings", S); applyAll(); toast("Settings saved");
+  });
+  $("s-export").addEventListener("click", function () { $("s-backup").value = btoa(unescape(encodeURIComponent(JSON.stringify(S)))); });
+  $("s-copybk").addEventListener("click", function () { if (!$("s-backup").value) $("s-export").click(); copy($("s-backup").value, $("s-backup")); });
+  $("s-import").addEventListener("click", function () {
+    try {
+      var o = JSON.parse(decodeURIComponent(escape(atob($("s-backup").value.trim()))));
+      S = Object.assign({}, DEFAULTS, o); store.set("settings", S); fillSetup(); applyAll(); toast("Settings loaded");
+    } catch (e) { toast("That code didn't work. Copy the whole code and try again."); }
+  });
+
+  fillSetup(); renderLog(); renderLines(); renderList(); applyAll(); route();
+})();
+</script>
+
+</body></html>
